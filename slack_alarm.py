@@ -10,11 +10,12 @@ import traceback
 import json
 import socket
 import requests
+import slack_config
 
 class SlackSender:
   def __init__(self, title: str, state: str = None):
-      self.webhook_url = "https://hooks.slack.com/services/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"
-      self.channel = "#alarm"
+      self.webhook_url = slack_config.WEBHOOK_URL
+      self.channel = slack_config.CHANNEL
       self.title = title
       self.DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
       self.state = state

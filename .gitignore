@@ -111,5 +111,5 @@ datasets/
 .idea/
 __MACOSX/
 
-# exercise
-exercises.ipynb
+# slack_config
+slack_config.py
