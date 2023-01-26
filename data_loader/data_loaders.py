@@ -1,0 +1,52 @@
+from torchvision import datasets, transforms
+from torch.utils.data import TensorDataset
+from base import BaseDataLoader
+from tqdm import tqdm
+from PIL import Image
+from pathlib import Path
+import torch
+
+
+class MnistDataLoader(BaseDataLoader):
+    """
+    MNIST data loading demo using BaseDataLoader
+    """
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        trsfm = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ])
+        self.data_dir = data_dir
+        self.dataset = datasets.MNIST(self.data_dir, train=training, download=True, transform=trsfm)
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+
+class NotMnistDataLoader(BaseDataLoader):
+
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        self.data_dir = data_dir
+        self.dataset = NotMnistDataset()
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+
+class NotMnistDataset(TensorDataset):
+
+    def __init__(self, training = True):
+        dataset_x_list = []
+        dataset_y_list = []
+
+        for folder in tqdm(Path("./datasets").iterdir()):
+            alphabet = str(folder)[-1]
+
+            for alpha in tqdm(folder.iterdir()):
+                try:
+                    im = Image.open(str(alpha))
+                except:
+                    continue
+                
+                im_tensor = transforms.ToTensor()(im)
+                dataset_x_list.append(im_tensor)
+                dataset_y_list.append(ord(alphabet) - 65) # A => 0, B => 1, ... , J => 9
+
+        self.tensor_x = torch.stack(dataset_x_list)
+        self.tensor_y = torch.tensor(dataset_y_list)
+
+        self.tensors = (self.tensor_x, self.tensor_y)
