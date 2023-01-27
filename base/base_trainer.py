@@ -75,7 +75,7 @@ class BaseTrainer:
 
             # print logged informations to the screen
             for key, value in log.items():
-                self.logger.info('    {:15s}: {}'.format(str(key), value))
+                self.logger.info('  {:15s}: {}'.format(str(key), round(value, 14)))
 
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
@@ -102,7 +102,7 @@ class BaseTrainer:
 
                     log_for_slack = '\n'
                     for key, value in log.items():
-                        log_for_slack += '    {:15s}: {}'.format(str(key), value)
+                        log_for_slack += '  {:15s}: {}'.format(str(key), round(value, 14))
                         log_for_slack += '\n'
                     ss.slack_sender(state = 'training',
                                     value = log_for_slack,

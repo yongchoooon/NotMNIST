@@ -55,12 +55,12 @@ class SlackSender:
                           "Starting date: %s" % start_time.strftime(self.DATE_FORMAT),
                           "End date: %s" % end_time.strftime(self.DATE_FORMAT),
                           "Training duration: %s" % str(elapsed_time),
-                          "=============================="])
+                          "============================="])
           
           try:
             str_value = str(value)
             contents.append(str_value)
-            contents.append("==============================")
+            contents.append("=============================")
           except:
             contents.append("Title returned value: %s"% "ERROR - Couldn't str the returned value.")
 
