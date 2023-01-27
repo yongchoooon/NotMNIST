@@ -75,7 +75,7 @@ class SlackSender:
             attachments = {
               "user": slack_config.USER_ID,
               "channels": slack_config.CHANNEL_ID,
-              "title": self.title,
+              "title": self.title + " - Epoch: %s" % epoch,
               "content": f.read()
             }
           requests.post('https://slack.com/api/files.upload', headers = header, data = attachments)
