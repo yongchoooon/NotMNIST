@@ -26,7 +26,7 @@ class SlackSender:
       self.slack_sender(state = self.state)
 
 
-  def slack_sender(self, state: str, value = None):
+  def slack_sender(self, state: str, plt_dir: str = None, epoch: int = None, value = None):
       dump = {
           "username": "Knock Knock",
           "channel": self.channel
@@ -68,6 +68,18 @@ class SlackSender:
           dump["username"] = "Knock Knock - Training"
           dump["icon_emoji"] = ":fire:"
 
+          with open(plt_dir / f"plt-epoch{str(epoch)}.png", "rb") as f: ## 이미지 보내기 
+            header = {
+              'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+              'Authorization': "Bearer " + slack_config.TOKEN}
+            attachments = {
+              "user": slack_config.USER_ID,
+              "channels": slack_config.CHANNEL_ID,
+              "title": self.title,
+              "content": f.read()
+            }
+          requests.post('https://slack.com/api/files.upload', headers = header, data = attachments)
+
         elif state == "end":
           end_time = datetime.datetime.now()
           elapsed_time = end_time - start_time
@@ -87,7 +99,7 @@ class SlackSender:
       except Exception as ex:
         end_time = datetime.datetime.now()
         elapsed_time = end_time - start_time
-        contents.append["Your training has crashed ☠️",
+        contents = (["Your training has crashed ☠️",
                         'Machine name: %s' % host_name,
                         'Title: %s' % self.title,
                         'Starting date: %s' % start_time.strftime(self.DATE_FORMAT),
@@ -96,7 +108,7 @@ class SlackSender:
                         "Here's the error:",
                         '%s\n\n' % ex,
                         "Traceback:",
-                        '%s' % traceback.format_exc()]
+                        '%s' % traceback.format_exc()])
         dump['text'] = '\n'.join(contents)
         dump['icon_emoji'] = ':skull_and_crossbones:'
         requests.post(self.webhook_url, json.dumps(dump))

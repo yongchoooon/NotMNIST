@@ -3,6 +3,7 @@ from abc import abstractmethod
 from numpy import inf
 from logger import TensorboardWriter
 from slack_alarm import SlackSender
+import matplotlib.pyplot as plt
 
 class BaseTrainer:
     """
@@ -38,6 +39,10 @@ class BaseTrainer:
         self.start_epoch = 1
 
         self.checkpoint_dir = config.save_dir
+
+        self.plt_dir = config._plt_dir
+        self.loss_list = []
+        self.val_loss_list = []
 
         # setup visualization writer instance                
         self.writer = TensorboardWriter(config.log_dir, self.logger, cfg_trainer['tensorboard'])
@@ -93,12 +98,16 @@ class BaseTrainer:
                     not_improved_count += 1
 
                 if epoch % 1 == 0:
+                    self._save_plt(epoch, log)
+
                     log_for_slack = '\n'
                     for key, value in log.items():
                         log_for_slack += '    {:15s}: {}'.format(str(key), value)
                         log_for_slack += '\n'
                     ss.slack_sender(state = 'training',
-                                    value = log_for_slack)
+                                    value = log_for_slack,
+                                    plt_dir = self.plt_dir,
+                                    epoch = epoch)
 
                 if not_improved_count > self.early_stop:
                     ss.slack_sender(state = 'end',
@@ -161,3 +170,24 @@ class BaseTrainer:
             self.optimizer.load_state_dict(checkpoint['optimizer'])
 
         self.logger.info("Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch))
+
+    def _save_plt(self, epoch, log):
+        """
+        Saving plots
+
+        :param epoch: current epoch number
+        :param log: logging information of the epoch
+        """
+
+        self.loss_list.append(log['loss'])
+        self.val_loss_list.append(log['val_loss'])
+
+        filename = str(self.plt_dir / 'plt-epoch{}.png'.format(epoch))
+        plt.plot(self.loss_list, label='train_loss')
+        plt.plot(self.val_loss_list, label='val_loss')
+        plt.xlabel('epoch')
+        plt.ylabel('loss')
+        plt.legend()
+        plt.savefig(filename)
+        plt.close()
+        self.logger.info("Saving plot: {} ...".format(filename))
