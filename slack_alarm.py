@@ -68,17 +68,7 @@ class SlackSender:
           dump["username"] = "Knock Knock - Training"
           dump["icon_emoji"] = ":fire:"
 
-          with open(plt_dir / f"plt-epoch{str(epoch)}.png", "rb") as f: ## 이미지 보내기 
-            header = {
-              'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
-              'Authorization': "Bearer " + slack_config.TOKEN}
-            attachments = {
-              "user": slack_config.USER_ID,
-              "channels": slack_config.CHANNEL_ID,
-              "title": self.title + " - Epoch: %s" % epoch,
-              "content": f.read()
-            }
-          requests.post('https://slack.com/api/files.upload', headers = header, data = attachments)
+          self.slack_plt_image_sender(plt_dir, epoch)
 
         elif state == "end":
           end_time = datetime.datetime.now()
@@ -113,3 +103,16 @@ class SlackSender:
         dump['icon_emoji'] = ':skull_and_crossbones:'
         requests.post(self.webhook_url, json.dumps(dump))
         raise ex
+
+  def slack_plt_image_sender(self, plt_dir, epoch):
+      with open(plt_dir / f"plt-epoch{str(epoch)}.png", "rb") as f: ## 이미지 보내기 
+          header = {
+            'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Authorization': "Bearer " + slack_config.TOKEN}
+          attachments = {
+            "user": slack_config.USER_ID,
+            "channels": slack_config.CHANNEL_ID,
+            "title": self.title + " - Epoch: %s" % epoch,
+            "content": f.read()
+          }
+      requests.post('https://slack.com/api/files.upload', headers = header, data = attachments)
