@@ -14,3 +14,4 @@
 
 ## Datasets
 - [NotMNIST](http://yaroslavvb.blogspot.com/2011/09/notmnist-dataset.html)
+- [Stanford Dog Breed](http://vision.stanford.edu/aditya86/ImageNetDogs/main.html)
