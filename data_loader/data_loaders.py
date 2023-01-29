@@ -11,29 +11,36 @@ class MnistDataLoader(BaseDataLoader):
     """
     MNIST data loading demo using BaseDataLoader
     """
-    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
         trsfm = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
         ])
-        self.data_dir = data_dir
+        self.data_dir = "data/"
         self.dataset = datasets.MNIST(self.data_dir, train=training, download=True, transform=trsfm)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 class NotMnistDataLoader(BaseDataLoader):
-
-    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
-        self.data_dir = data_dir
-        self.dataset = NotMnistDataset()
+    """
+    NotMNIST data loading demo using BaseDataLoader
+    """
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        self.dataset = NotMnistDataset(training)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 class NotMnistDataset(TensorDataset):
-
+    """
+    NotMNIST dataset using TensorDataset
+    """
     def __init__(self, training = True):
         dataset_x_list = []
         dataset_y_list = []
+        if training:
+            DATASET_PATH = "datasets_notmnist/train"
+        else:
+            DATASET_PATH = "datasets_notmnist/test"
 
-        for folder in tqdm(Path("./datasets").iterdir()):
+        for folder in tqdm(Path(DATASET_PATH).iterdir()):
             alphabet = str(folder)[-1]
 
             for alpha in tqdm(folder.iterdir()):
@@ -50,3 +57,28 @@ class NotMnistDataset(TensorDataset):
         self.tensor_y = torch.tensor(dataset_y_list)
 
         self.tensors = (self.tensor_x, self.tensor_y)
+
+class DogBreedDataLoader(BaseDataLoader):
+    """
+    DogBreed data loading demo using BaseDataLoader
+    """
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+        
+        if training:
+            DATASET_PATH = "datasets_dogbreed/train"
+            trsfm = transforms.Compose([transforms.RandomRotation(30),
+                                                   transforms.RandomResizedCrop(224),
+                                                   transforms.RandomHorizontalFlip(),
+                                                   transforms.ToTensor(),
+                                                   transforms.Normalize([0.485, 0.456, 0.406],
+                                                                        [0.229, 0.224, 0.225])])
+        else:
+            DATASET_PATH = "datasets_dogbreed/test"
+            trsfm = transforms.Compose([transforms.Resize(255),
+                                                  transforms.CenterCrop(224),
+                                                  transforms.ToTensor(),
+                                                  transforms.Normalize([0.485, 0.456, 0.406],
+                                                                       [0.229, 0.224, 0.225])])
+
+        self.dataset = datasets.ImageFolder(DATASET_PATH, transform=trsfm)
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)

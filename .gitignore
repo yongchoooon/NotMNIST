@@ -105,6 +105,9 @@ data/
 input/
 saved/
 datasets/
+Images/
+datasets_dogbreed/
+datasets_notmnist/
 
 # editor, os cache directory
 .vscode/
@@ -113,3 +116,6 @@ __MACOSX/
 
 # slack_config
 slack_config.py
+
+# image_data_processor
+image_data_processor/
