@@ -13,5 +13,4 @@
   - [slack_alarm.py](./slack_alarm.py)
 
 ## Datasets
-- NotMNIST
-  - [NotMNIST](http://yaroslavvb.blogspot.com/2011/09/notmnist-dataset.html)
+- [NotMNIST](http://yaroslavvb.blogspot.com/2011/09/notmnist-dataset.html)
