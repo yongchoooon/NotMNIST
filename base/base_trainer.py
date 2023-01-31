@@ -64,7 +64,7 @@ class BaseTrainer:
         Full training logic
         """
         not_improved_count = 0
-        ss = SlackSender(title = self.config["name"],
+        ss = SlackSender(config = self.config,
                          state = 'start')
         for epoch in range(self.start_epoch, self.epochs + 1):
             result = self._train_epoch(epoch)
@@ -183,8 +183,8 @@ class BaseTrainer:
         self.val_loss_list.append(log['val_loss'])
 
         filename = str(self.plt_dir / 'plt-epoch{}.png'.format(epoch))
-        plt.plot(self.loss_list, label='train_loss')
-        plt.plot(self.val_loss_list, label='val_loss')
+        plt.plot(range(1, len(self.loss_list) + 1), self.loss_list, label='train_loss')
+        plt.plot(range(1, len(self.val_loss_list) + 1), self.val_loss_list, label='val_loss')
         plt.xlabel('epoch')
         plt.ylabel('loss')
         plt.legend()

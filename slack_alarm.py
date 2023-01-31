@@ -13,12 +13,18 @@ import requests
 import slack_config
 
 class SlackSender:
-  def __init__(self, title: str, state: str = None):
+  def __init__(self, config, state: str = None):
+      self.config = config    
       self.webhook_url = slack_config.WEBHOOK_URL
       self.channel = slack_config.CHANNEL
-      self.title = title
+      self.title = config["name"]
       self.DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
       self.state = state
+
+      self.num_epoch = config["trainer"]["epochs"]
+      self.batch_size = config["data_loader"]["args"]["batch_size"]
+      self.optimizer_type = config["optimizer"]["type"]
+      self.optimizer_args = config["optimizer"]["args"]
 
       self.start_time = datetime.datetime.now()
       self.host_name = socket.gethostname()
@@ -55,8 +61,13 @@ class SlackSender:
                           "Starting date: %s" % start_time.strftime(self.DATE_FORMAT),
                           "End date: %s" % end_time.strftime(self.DATE_FORMAT),
                           "Training duration: %s" % str(elapsed_time),
-                          "============================="])
-          
+                          "-----------------------------",
+                          "Number of epochs: %s" % self.num_epoch,
+                          "Batch size: %s" % self.batch_size,
+                          "Optimizer: %s" % self.optimizer_type])
+          for arg, arg_value in self.optimizer_args.items():
+            contents.append(f"  {arg}: {arg_value}")
+          contents.append("=============================")
           try:
             str_value = str(value)
             contents.append(str_value)
