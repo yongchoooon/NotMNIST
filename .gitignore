@@ -119,3 +119,5 @@ slack_config.py
 
 # image_data_processor
 image_data_processor/
+
+exercise.ipynb
