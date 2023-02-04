@@ -19,14 +19,14 @@ class Trainer(BaseTrainer):
             # epoch-based training
             self.len_epoch = len(self.data_loader)
         else:
-            # iteration-based training
+            # iteration-based trainingf
             self.data_loader = inf_loop(data_loader)
             self.len_epoch = len_epoch
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
-        self.add_image_step = data_loader.batch_size - 1
+        self.add_image_step = data_loader.batch_size * 2
 
         self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
         self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
@@ -97,8 +97,12 @@ class Trainer(BaseTrainer):
                 self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
-        for name, p in self.model.named_parameters():
-            self.writer.add_histogram(name, p, bins='auto')
+        # for name, p in self.model.named_parameters():
+        #     self.writer.add_histogram(name, p, bins='auto')
+        #
+        # The above code is annotated because of the error below.
+        # 'ValueError: Message tensorboard.Event exceeds maximum protobuf size of 2GB'
+        # 
         return self.valid_metrics.result()
 
     def _progress(self, batch_idx):
