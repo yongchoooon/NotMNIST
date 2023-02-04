@@ -43,7 +43,6 @@ class SlackSender:
 
       contents = []
 
-      # try: 
       if state == "start":
         contents = (["Your training has started 🎬",
                         "Machine name: %s" % host_name,
@@ -97,23 +96,6 @@ class SlackSender:
 
       requests.post(self.webhook_url, json.dumps(dump))
 
-      # except Exception as ex:
-      #   end_time = datetime.datetime.now()
-      #   elapsed_time = end_time - start_time
-      #   contents = (["Your training has crashed ☠️",
-      #                   'Machine name: %s' % host_name,
-      #                   'Title: %s' % self.title,
-      #                   'Starting date: %s' % start_time.strftime(self.DATE_FORMAT),
-      #                   'Crash date: %s' % end_time.strftime(self.DATE_FORMAT),
-      #                   'Crashed training duration: %s\n\n' % str(elapsed_time),
-      #                   "Here's the error:",
-      #                   '%s\n\n' % ex,
-      #                   "Traceback:",
-      #                   '%s' % traceback.format_exc()])
-      #   dump['text'] = '\n'.join(contents)
-      #   dump['icon_emoji'] = ':skull_and_crossbones:'
-      #   requests.post(self.webhook_url, json.dumps(dump))
-      #   raise ex
 
 
   def slack_plt_image_sender(self, plt_dir, epoch):
