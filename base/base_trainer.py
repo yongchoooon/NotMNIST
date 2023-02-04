@@ -94,14 +94,24 @@ class BaseTrainer:
                     self.mnt_best = log[self.mnt_metric]
                     not_improved_count = 0
                     best = True
+                    log["best_epoch"] = epoch
+                    log["best_{}".format(self.mnt_metric)] = self.mnt_best
+                    log["best_val_acc"] = log["val_accuracy"]
                 else:
                     not_improved_count += 1
+
+                # print logged informations to the screen
+                self.logger.info('  best_epoch     : {}'.format(str(epoch)))
+                self.logger.info('  {:15s}: {}'.format(str(self.mnt_metric), round(self.mnt_best, 14)))
+                self.logger.info('  best_val_acc   : {}'.format(round(log["val_accuracy"], 14)))
 
                 if epoch % 1 == 0:
                     self._save_plt(epoch, log)
 
                     log_for_slack = '\n'
                     for key, value in log.items():
+                        if key == 'best_epoch':
+                            log_for_slack += "-----------------------------\n"
                         log_for_slack += '  {:15s}: {}'.format(str(key), round(value, 14))
                         log_for_slack += '\n'
                     ss.slack_sender(state = 'training',
@@ -142,7 +152,7 @@ class BaseTrainer:
         if save_best:
             best_path = str(self.checkpoint_dir / 'model_best.pth')
             torch.save(state, best_path)
-            self.logger.info("Saving current best: model_best.pth ...")
+            self.logger.info("Saving current best: model_best.pth ... epoch: {}".format(epoch))
 
     def _resume_checkpoint(self, resume_path):
         """
