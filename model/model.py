@@ -24,9 +24,18 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class DenseNetModel(BaseModel):
-    def __init__(self, num_classes = 120, growth_rate = 32, nums_blocks = (6, 12, 24, 16)):
+    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 201):
         super().__init__()
         self.num_first_input_features = 2 * growth_rate
+        
+        if num_network_layers == 121:
+            self.nums_blocks = (6, 12, 24, 16)
+        elif num_network_layers == 169:
+            self.nums_blocks = (6, 12, 32, 32)
+        elif num_network_layers == 201:
+            self.nums_blocks = (6, 12, 48, 32)
+        elif num_network_layers == 264:
+            self.nums_blocks = (6, 12, 64, 48)
 
         # First convolution
         self.features = nn.Sequential(OrderedDict([
@@ -38,16 +47,16 @@ class DenseNetModel(BaseModel):
 
         # Each denseblock
         num_input_features = self.num_first_input_features
-        for b in range(len(nums_blocks)):
+        for b in range(len(self.nums_blocks)):
             block = DenseBlock(
-                num_layers = nums_blocks[b],
+                num_layers = self.nums_blocks[b],
                 num_input_features = num_input_features,
                 growth_rate = growth_rate
             )
             self.features.add_module(f"DenseBlock{b}", block)
-            num_input_features = num_input_features + nums_blocks[b] * growth_rate
+            num_input_features = num_input_features + self.nums_blocks[b] * growth_rate
             
-            if b != len(nums_blocks) - 1:
+            if b != len(self.nums_blocks) - 1:
                 num_output_features = num_input_features // 2
                 trans = TransitionLayer(num_input_features, num_output_features)
                 self.features.add_module(f"TransmisionLayer{b}", trans)
@@ -125,3 +134,28 @@ class TransitionLayer(nn.Sequential):
 #     def forward(self, x):
 #         return F.log_softmax(self.model(x), dim=0)
 
+class ResNet101Model(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.resnet101(pretrained=False)
+        self.model.fc = nn.Linear(2048, 120)
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+class VGG16Model(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.vgg16(pretrained=False)
+        self.model.classifier = nn.Sequential(
+            nn.Linear(25088, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, 120),
+        )
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
