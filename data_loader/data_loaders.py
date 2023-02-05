@@ -62,7 +62,7 @@ class DogBreedDataLoader(BaseDataLoader):
     """
     DogBreed data loading demo using BaseDataLoader
     """
-    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
+    def __init__(self, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True, validation=False):
         
         if training:
             DATASET_PATH = "datasets_dogbreed/train"
@@ -72,6 +72,13 @@ class DogBreedDataLoader(BaseDataLoader):
                                                    transforms.ToTensor(),
                                                    transforms.Normalize([0.485, 0.456, 0.406],
                                                                         [0.229, 0.224, 0.225])])
+            if validation:
+                DATASET_PATH = "datasets_dogbreed/val"
+                trsfm = transforms.Compose([transforms.Resize(255),
+                                                      transforms.CenterCrop(224),
+                                                      transforms.ToTensor(),
+                                                      transforms.Normalize([0.485, 0.456, 0.406],
+                                                                           [0.229, 0.224, 0.225])])
         else:
             DATASET_PATH = "datasets_dogbreed/test"
             trsfm = transforms.Compose([transforms.Resize(255),
