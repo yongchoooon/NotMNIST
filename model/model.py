@@ -23,8 +23,8 @@ class MnistModel(BaseModel):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-class DenseNetModel(BaseModel):
-    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 201):
+class MyDenseNetModel(BaseModel):
+    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 169):
         super().__init__()
         self.num_first_input_features = 2 * growth_rate
         
@@ -34,8 +34,6 @@ class DenseNetModel(BaseModel):
             self.nums_blocks = (6, 12, 32, 32)
         elif num_network_layers == 201:
             self.nums_blocks = (6, 12, 48, 32)
-        elif num_network_layers == 264:
-            self.nums_blocks = (6, 12, 64, 48)
 
         # First convolution
         self.features = nn.Sequential(OrderedDict([
@@ -125,14 +123,14 @@ class TransitionLayer(nn.Sequential):
         self.conv = nn.Conv2d(in_channels = num_input_features, out_channels = num_output_features, kernel_size = 1, stride = 1, padding = 0)
         self.avgpool = nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 0)
 
-# class DenseNetModel(BaseModel):
-#     def __init__(self):
-#         super().__init__()
-#         self.model = models.densenet121(pretrained=False)
-#         self.model.classifier = nn.Linear(1024, 120)
+class DenseNetModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.densenet121(pretrained=False)
+        self.model.classifier = nn.Linear(1024, 120)
 
-#     def forward(self, x):
-#         return F.log_softmax(self.model(x), dim=0)
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
 
 class ResNet101Model(BaseModel):
     def __init__(self):
