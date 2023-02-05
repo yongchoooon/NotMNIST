@@ -78,7 +78,7 @@ class BaseTrainer:
 
             # print logged informations to the screen
             for key, value in log.items():
-                self.logger.info('  {:15s}: {}'.format(str(key), round(value, 14)))
+                self.logger.info('  {:15s}: {}'.format(str(key), round(value, 12)))
 
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
@@ -107,9 +107,9 @@ class BaseTrainer:
                 log["best_{}".format(self.mnt_metric)] = self.mnt_best
 
                 # print logged informations to the screen
-                self.logger.info('  best_epoch     : {}'.format(str(epoch)))
-                self.logger.info('  best_val_loss   : {}'.format(round(log["val_loss"], 14)))
-                self.logger.info('  {:15s}: {}'.format(str(self.mnt_metric), round(self.mnt_best, 14)))
+                self.logger.info('  best_epoch     : {}'.format(str(self.mnt_best_epoch)))
+                self.logger.info('  best_val_loss   : {}'.format(round(self.mnt_best_val_loss, 12)))
+                self.logger.info('  {:15s}: {}'.format(str(self.mnt_metric), round(self.mnt_best, 12)))
 
                 if epoch % 1 == 0:
                     self._save_plt(epoch, log)
@@ -118,7 +118,7 @@ class BaseTrainer:
                     for key, value in log.items():
                         if key == 'best_epoch':
                             log_for_slack += "-----------------------------\n"
-                        log_for_slack += '  {:15s}: {}'.format(str(key), round(value, 14))
+                        log_for_slack += '  {:15s}: {}'.format(str(key), round(value, 12))
                         log_for_slack += '\n'
                     ss.slack_sender(state = 'training',
                                     value = log_for_slack,
