@@ -28,6 +28,7 @@ class SlackSender:
 
       self.start_time = datetime.datetime.now()
       self.host_name = socket.gethostname()
+      self.last_epoch_end_time = self.start_time
 
       self.slack_sender(state = self.state)
 
@@ -53,6 +54,8 @@ class SlackSender:
       
       elif state == "training":
         end_time = datetime.datetime.now()
+        epoch_time = end_time - self.last_epoch_end_time
+        self.last_epoch_end_time = end_time
         elapsed_time = end_time - start_time
         contents = (["Your training is going well 🔥",
                         "Machine name: %s" % host_name,
@@ -60,6 +63,7 @@ class SlackSender:
                         "Starting date: %s" % start_time.strftime(self.DATE_FORMAT),
                         "End date: %s" % end_time.strftime(self.DATE_FORMAT),
                         "Training duration: %s" % str(elapsed_time),
+                        "Epoch duration: %s" % str(epoch_time),
                         "-----------------------------",
                         "Number of epochs: %s" % self.num_epoch,
                         "Batch size: %s" % self.batch_size,
