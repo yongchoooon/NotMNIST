@@ -36,6 +36,9 @@ class BaseTrainer:
             if self.early_stop <= 0:
                 self.early_stop = inf
 
+        self.mnt_best_epoch = 0
+        self.mnt_best_val_loss = inf
+
         self.start_epoch = 1
 
         self.checkpoint_dir = config.save_dir
@@ -92,18 +95,21 @@ class BaseTrainer:
 
                 if improved:
                     self.mnt_best = log[self.mnt_metric]
+                    self.mnt_best_epoch = epoch
+                    self.mnt_best_val_loss = log["val_loss"]
                     not_improved_count = 0
                     best = True
-                    log["best_epoch"] = epoch
-                    log["best_{}".format(self.mnt_metric)] = self.mnt_best
-                    log["best_val_acc"] = log["val_accuracy"]
                 else:
                     not_improved_count += 1
 
+                log["best_epoch"] = self.mnt_best_epoch
+                log["best_loss"] = self.mnt_best_val_loss
+                log["best_{}".format(self.mnt_metric)] = self.mnt_best
+
                 # print logged informations to the screen
                 self.logger.info('  best_epoch     : {}'.format(str(epoch)))
+                self.logger.info('  best_val_loss   : {}'.format(round(log["val_loss"], 14)))
                 self.logger.info('  {:15s}: {}'.format(str(self.mnt_metric), round(self.mnt_best, 14)))
-                self.logger.info('  best_val_acc   : {}'.format(round(log["val_accuracy"], 14)))
 
                 if epoch % 1 == 0:
                     self._save_plt(epoch, log)
