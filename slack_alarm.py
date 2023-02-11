@@ -26,7 +26,7 @@ class SlackSender:
       self.optimizer_type = config["optimizer"]["type"]
       self.optimizer_args = config["optimizer"]["args"]
 
-      self.start_time = datetime.datetime.now()
+      self.start_time = datetime.datetime.now() + datetime.timedelta(hours=9)
       self.host_name = socket.gethostname()
       self.last_epoch_end_time = self.start_time
 
@@ -53,7 +53,7 @@ class SlackSender:
         dump["icon_emoji"] = ":clapper:"
       
       elif state == "training":
-        end_time = datetime.datetime.now()
+        end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
         epoch_time = end_time - self.last_epoch_end_time
         self.last_epoch_end_time = end_time
         elapsed_time = end_time - start_time
@@ -64,6 +64,7 @@ class SlackSender:
                         "End date: %s" % end_time.strftime(self.DATE_FORMAT),
                         "Training duration: %s" % str(elapsed_time),
                         "Epoch duration: %s" % str(epoch_time),
+                        "Expected end date: %s" % (start_time + elapsed_time * self.num_epoch).strftime(self.DATE_FORMAT),
                         "-----------------------------",
                         "Number of epochs: %s" % self.num_epoch,
                         "Batch size: %s" % self.batch_size,
