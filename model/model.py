@@ -24,7 +24,7 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class MyDenseNetModel(BaseModel):
-    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 169):
+    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 121):
         super().__init__()
         self.num_first_input_features = 2 * growth_rate
         
@@ -132,19 +132,19 @@ class DenseNetModel(BaseModel):
     def forward(self, x):
         return F.log_softmax(self.model(x), dim=0)
 
-class ResNet101Model(BaseModel):
+class ResNet152Model(BaseModel):
     def __init__(self):
         super().__init__()
-        self.model = models.resnet101(pretrained=False)
+        self.model = models.resnet152(pretrained=False)
         self.model.fc = nn.Linear(2048, 120)
 
     def forward(self, x):
         return F.log_softmax(self.model(x), dim=0)
 
-class VGG16Model(BaseModel):
+class VGG19Model(BaseModel):
     def __init__(self):
         super().__init__()
-        self.model = models.vgg16(pretrained=False)
+        self.model = models.vgg19(pretrained=False)
         self.model.classifier = nn.Sequential(
             nn.Linear(25088, 4096),
             nn.ReLU(True),
@@ -152,7 +152,24 @@ class VGG16Model(BaseModel):
             nn.Linear(4096, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 120),
+            nn.Linear(4096, 120)
+        )
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+class VGG19BNModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.vgg19_bn(pretrained=False)
+        self.model.classifier = nn.Sequential(
+            nn.Linear(25088, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(4096, 120)
         )
 
     def forward(self, x):
