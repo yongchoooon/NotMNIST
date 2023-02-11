@@ -64,7 +64,7 @@ class SlackSender:
                         "End date: %s" % end_time.strftime(self.DATE_FORMAT),
                         "Training duration: %s" % str(elapsed_time),
                         "Epoch duration: %s" % str(epoch_time),
-                        "Expected end date: %s" % (start_time + elapsed_time * self.num_epoch).strftime(self.DATE_FORMAT),
+                        "Expected end date: %s" % (start_time + epoch_time * self.num_epoch).strftime(self.DATE_FORMAT),
                         "-----------------------------",
                         "Number of epochs: %s" % self.num_epoch,
                         "Batch size: %s" % self.batch_size,
