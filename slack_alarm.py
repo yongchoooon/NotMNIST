@@ -53,7 +53,7 @@ class SlackSender:
         dump["icon_emoji"] = ":clapper:"
       
       elif state == "training":
-        end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
+        end_time = datetime.datetime.now() + datetime.timedelta(hours=9)
         epoch_time = end_time - self.last_epoch_end_time
         self.last_epoch_end_time = end_time
         elapsed_time = end_time - start_time
