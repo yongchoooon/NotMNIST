@@ -10,7 +10,7 @@ from slack_alarm import SlackSender
 from parse_config import ConfigParser
 from trainer import Trainer
 from utils import prepare_device
-
+from custom_lr_scheduler import CosineAnnealingWarmUpRestarts as CAWUR
 
 
 # fix random seeds for reproducibility
@@ -46,7 +46,10 @@ def main(config):
         # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
         trainable_params = filter(lambda p: p.requires_grad, model.parameters())
         optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
-        lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
+        if config['lr_scheduler']['type'] == 'CosineAnnealingWarmUpRestarts':
+            lr_scheduler = CAWUR(optimizer, **config['lr_scheduler']['args'])
+        else:
+            lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
         trainer = Trainer(model, criterion, metrics, optimizer,
                         config=config,
