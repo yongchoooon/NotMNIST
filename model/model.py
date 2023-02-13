@@ -24,7 +24,7 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class MyDenseNetModel(BaseModel):
-    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 121):
+    def __init__(self, num_classes = 120, growth_rate = 32, num_network_layers = 201):
         super().__init__()
         self.num_first_input_features = 2 * growth_rate
         
@@ -109,10 +109,10 @@ class DenseLayer(nn.Sequential):
         super().__init__()
         self.norm0 = nn.BatchNorm2d(num_input_features)
         self.relu0 = nn.ReLU(inplace = True)
-        self.conv0 = nn.Conv2d(in_channels = num_input_features, out_channels = 4 * growth_rate, kernel_size = 1, stride = 1, padding = 0)
+        self.conv0 = nn.Conv2d(in_channels = num_input_features, out_channels = 4 * growth_rate, kernel_size = 1, stride = 1, padding = 0, bias=False)
         self.norm1 = nn.BatchNorm2d(4 * growth_rate)
         self.relu1 = nn.ReLU(inplace = True)
-        self.conv1 = nn.Conv2d(in_channels = 4 * growth_rate, out_channels = growth_rate, kernel_size = 3, stride = 1, padding = 1)
+        self.conv1 = nn.Conv2d(in_channels = 4 * growth_rate, out_channels = growth_rate, kernel_size = 3, stride = 1, padding = 1, bias=False)
 
 
 class TransitionLayer(nn.Sequential):
@@ -120,7 +120,7 @@ class TransitionLayer(nn.Sequential):
         super().__init__()
         self.norm = nn.BatchNorm2d(num_input_features)
         self.relu = nn.ReLU(inplace=True)
-        self.conv = nn.Conv2d(in_channels = num_input_features, out_channels = num_output_features, kernel_size = 1, stride = 1, padding = 0)
+        self.conv = nn.Conv2d(in_channels = num_input_features, out_channels = num_output_features, kernel_size = 1, stride = 1, padding = 0, bias=False)
         self.avgpool = nn.AvgPool2d(kernel_size = 2, stride = 2, padding = 0)
 
 class DenseNetModel(BaseModel):
@@ -174,3 +174,4 @@ class VGG19BNModel(BaseModel):
 
     def forward(self, x):
         return F.log_softmax(self.model(x), dim=0)
+
