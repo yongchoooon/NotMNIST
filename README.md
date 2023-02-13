@@ -15,3 +15,10 @@
 ## Datasets
 - [NotMNIST](http://yaroslavvb.blogspot.com/2011/09/notmnist-dataset.html)
 - [Stanford Dog Breed](http://vision.stanford.edu/aditya86/ImageNetDogs/main.html)
+
+## Assignment
+### Dog Breed Classification
+- Notion: [Dog Breed Classification](https://www.notion.so/Dog-Breed-adff4af9047f46c481a80b22c14ca397)
+  - DensetNet 코드 구현 및 학습
+  - VGG 모델 학습 이후 Generation 기법 적용해 성능 올리기 연습
+  - Transfer Learning으로 성능 올리기
