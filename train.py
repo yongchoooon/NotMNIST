@@ -46,6 +46,21 @@ def main(config):
         # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
         trainable_params = filter(lambda p: p.requires_grad, model.parameters())
         optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
+
+        ### custom optimizer ###
+        # bias_parameters = []
+        # weight_parameters = []
+        # for name, param in model.named_parameters():
+        #     if 'bias' in name:
+        #         bias_parameters.append(param)
+        #     else:
+        #         weight_parameters.append(param)
+        # optimizer = torch.optim.SGD([
+        #     {'params': weight_parameters, 'weight_decay': 0.0001},
+        #     {'params': bias_parameters, 'weight_decay': 0}
+        #     ], lr=0.1, momentum=0.9, nesterov=True)
+        ### custom optimizer ###
+
         if config['lr_scheduler']['type'] == 'CosineAnnealingWarmUpRestarts':
             lr_scheduler = CAWUR(optimizer, **config['lr_scheduler']['args'])
         else:
