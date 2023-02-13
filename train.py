@@ -63,6 +63,16 @@ def main(config):
 
         if config['lr_scheduler']['type'] == 'CosineAnnealingWarmUpRestarts':
             lr_scheduler = CAWUR(optimizer, **config['lr_scheduler']['args'])
+        if config['lr_scheduler']['type'] == 'LambdaLR':
+            def func(epoch):
+                lr = config['optimizer']['args']['lr']
+                if epoch <= 100:
+                    return lr
+                elif epoch > 100 and epoch <= 200 and epoch % 10 == 0:
+                    return lr * (0.5 ** ((epoch - 90) // 10)) 
+                else: 
+                    return lr * (0.5 ** ((epoch - 90) // 10))
+            lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer, lr_lambda=func)
         else:
             lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
