@@ -67,25 +67,27 @@ class DogBreedDataLoader(BaseDataLoader):
         if training:
             DATASET_PATH = "datasets_dogbreed/train"
             trsfm = transforms.Compose([transforms.RandomRotation(30),
-                                                   transforms.RandomResizedCrop(224),
-                                                   transforms.RandomHorizontalFlip(),
-                                                   transforms.ToTensor(),
-                                                   transforms.Normalize([0.485, 0.456, 0.406],
-                                                                        [0.229, 0.224, 0.225])])
+                                        transforms.RandomResizedCrop(224),
+                                        transforms.RandomHorizontalFlip(),
+                                        # transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
+                                        transforms.AutoAugment(transforms.AutoAugmentPolicy.IMAGENET),
+                                        transforms.ToTensor(),
+                                        transforms.Normalize([0.485, 0.456, 0.406],
+                                                            [0.229, 0.224, 0.225])])
             if validation:
                 DATASET_PATH = "datasets_dogbreed/val"
                 trsfm = transforms.Compose([transforms.Resize(255),
-                                                      transforms.CenterCrop(224),
-                                                      transforms.ToTensor(),
-                                                      transforms.Normalize([0.485, 0.456, 0.406],
+                                            transforms.CenterCrop(224),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize([0.485, 0.456, 0.406],
                                                                            [0.229, 0.224, 0.225])])
         else:
             DATASET_PATH = "datasets_dogbreed/test"
             trsfm = transforms.Compose([transforms.Resize(255),
-                                                  transforms.CenterCrop(224),
-                                                  transforms.ToTensor(),
-                                                  transforms.Normalize([0.485, 0.456, 0.406],
-                                                                       [0.229, 0.224, 0.225])])
+                                        transforms.CenterCrop(224),
+                                        transforms.ToTensor(),
+                                        transforms.Normalize([0.485, 0.456, 0.406],
+                                                            [0.229, 0.224, 0.225])])
 
         self.dataset = datasets.ImageFolder(DATASET_PATH, transform=trsfm)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)

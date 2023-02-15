@@ -1,8 +1,8 @@
 {
-    "name": "DogBreed_MyDenseNet201_step100_lr0.01",
+    "name": "DogBreed_ResNet152_Pretrained_Freeze_ColorJitter_lr0.005",
     "n_gpu": 1,
     "arch": {
-        "type": "MyDenseNetModel",
+        "type": "ResNet152PretrainedModel",
         "args": {}
     },
     "data_loader": {
@@ -17,7 +17,7 @@
     "optimizer": {
         "type": "SGD",
         "args": {
-            "lr": 0.01,
+            "lr": 0.005,
             "weight_decay": 0.0001,
             "momentum": 0.9,
             "nesterov": true
@@ -31,14 +31,14 @@
     "lr_scheduler": {
         "type": "StepLR",
         "args": {
-            "step_size": 100,
+            "step_size": 10,
             "gamma": 0.1
         }
     },
     "trainer": {
-        "epochs": 200,
+        "epochs": 1,
         "save_dir": "saved/",
-        "save_period": 5,
+        "save_period": 1,
         "verbosity": 2,
         "monitor": "max val_accuracy",
         "early_stop": 0,

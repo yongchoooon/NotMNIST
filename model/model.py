@@ -4,6 +4,7 @@ from base import BaseModel
 from collections import OrderedDict
 import torch
 import torchvision.models as models
+import timm
 
 class MnistModel(BaseModel):
     def __init__(self, num_classes=10):
@@ -175,3 +176,82 @@ class VGG19BNModel(BaseModel):
     def forward(self, x):
         return F.log_softmax(self.model(x), dim=0)
 
+class DenseNet121PretrainedModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.densenet121(pretrained=True)
+        self.model.classifier = nn.Linear(1024, 120)
+
+        for param in self.model.parameters():
+            param.requires_grad = False
+        
+        for param in self.model.classifier.parameters():
+            param.requires_grad = True
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+class DenseNet169PretrainedModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.densenet169(pretrained=True)
+        self.model.classifier = nn.Linear(1664, 120)
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+class ResNet101PretrainedModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = models.resnet101(pretrained=True)
+        self.model.fc = nn.Linear(2048, 120)
+
+        for param in self.model.parameters():
+            param.requires_grad = False
+        
+        for param in self.model.fc.parameters():
+            param.requires_grad = True
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+import torch.nn as nn
+import torch.nn.functional as F
+from base import BaseModel
+from collections import OrderedDict
+import torch
+import torchvision.models as models
+
+class ResNet152PretrainedModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        # self.model = models.resnet152(pretrained=True)
+        self.model = models.resnet152(weights = models.ResNet152_Weights.IMAGENET1K_V2)
+        self.model.fc = nn.Linear(2048, 120)
+
+        layer = 0
+        for child in self.model.children():
+            if layer <= 7: # 7, 8, 9번째 layer만 학습
+                for param in child.parameters():
+                    param.requires_grad = False
+            layer += 1
+
+        
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
+
+class SEResNeXt50_32x4dModel(BaseModel):
+    def __init__(self):
+        super().__init__()
+        self.model = timm.create_model('seresnext50_32x4d', pretrained=True)
+        self.model.fc = nn.Linear(2048, 120)
+
+        layer = 0
+        for child in self.model.children():
+            if layer <= 7: # 7, 8, 9번째 layer만 학습
+                for param in child.parameters():
+                    param.requires_grad = False
+            layer += 1
+
+    def forward(self, x):
+        return F.log_softmax(self.model(x), dim=0)
