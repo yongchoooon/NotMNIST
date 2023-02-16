@@ -215,13 +215,6 @@ class ResNet101PretrainedModel(BaseModel):
     def forward(self, x):
         return F.log_softmax(self.model(x), dim=0)
 
-import torch.nn as nn
-import torch.nn.functional as F
-from base import BaseModel
-from collections import OrderedDict
-import torch
-import torchvision.models as models
-
 class ResNet152PretrainedModel(BaseModel):
     def __init__(self):
         super().__init__()
