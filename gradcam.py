@@ -31,19 +31,19 @@ features_blobs = []
 def hook_feature(module, input, output):
     features_blobs.append(output.data.cpu().numpy())
  
+
 def model_loader(model_path):
     model = torch.load(model_path)
     model_name = model['arch']
     model = getattr(importlib.import_module('model.model'), model_name)()
     return model
 
+
 def main(config):
     MODEL_PATH = config.model
 
-
     model_state_dict = torch.load(MODEL_PATH)["state_dict"]
 
-    # load_model = ResNet152PretrainedModel()
     load_model = model_loader(MODEL_PATH)
     load_model.load_state_dict(model_state_dict)
     finalconv_name = 'layer4'
