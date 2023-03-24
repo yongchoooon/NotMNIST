@@ -72,7 +72,7 @@ class GradCam_resnet:
             grad_cam += w * target[i, :, :]  # linear combination L^c_{Grad-CAM} (= A^k * alpha_k)
 
         grad_cam = np.maximum(grad_cam, 0)  # ReLU
-        grad_cam = cv2.resize(grad_cam, (224, 224))  # 224X224크기로 변환
+        grad_cam = cv2.resize(grad_cam, (224, 224)) 
         grad_cam = grad_cam - np.min(grad_cam)  # 
         grad_cam = grad_cam / np.max(grad_cam)  # 위의 것과 해당 줄의 것은 0~1사이의 값으로 정규화하기 위한 정리
         return grad_cam
