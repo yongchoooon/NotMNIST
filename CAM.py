@@ -88,7 +88,7 @@ def main(config):
     height, width, _ = img.shape
     heatmap = cv2.applyColorMap(cv2.resize(CAMs[0],(width, height)), cv2.COLORMAP_JET)
     result = heatmap * 0.3 + img * 0.5
-    cv2.imwrite('GradCAM_images/CAM.jpg', result)
+    cv2.imwrite('CAM_images/CAM.jpg', result)
 
 if __name__ == '__main__':
     # Best model
