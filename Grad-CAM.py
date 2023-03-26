@@ -31,10 +31,8 @@ class ModelOutputs_resnet():
                 x = torch.flatten(x,1)
                 
             if name in self.target_layers: # target_layer라면 해당 layer에서의 gradient를 저장
-                for sub_name, sub_module in module[len(module)-1].named_children():
-                    if sub_name in self.target_sub_layers:
-                        x.register_hook(self.save_gradient)  
-                        target_feature_maps = x
+                x.register_hook(self.save_gradient)  
+                target_feature_maps = x
         return target_feature_maps, x
 
 
@@ -82,6 +80,7 @@ def main(config):
     MODEL_PATH = config.model
     IMAGE_PATH = config.image
     dogbreed = IMAGE_PATH.split('/')[-2]
+    dogbreed_num = IMAGE_PATH.split('/')[-1].split('_')[-1].split('.')[0]
 
     # Define the model
     model = models.resnet152()
@@ -127,15 +126,23 @@ def main(config):
     superimposed_img = superimposed_img / np.max(superimposed_img)
     superimposed_img = heatmap * 0.3 + superimposed_img * 0.5
 
-    cv2.imwrite('Grad-CAM_images/{}_Grad-CAM.jpg'.format(dogbreed), superimposed_img * 255)
+    cv2.imwrite('Grad-CAM_images/{}_{}_Grad-CAM.jpg'.format(dogbreed, dogbreed_num), superimposed_img * 255)
 
 if __name__ == '__main__':
     MODEL_PATH = './saved/models/DogBreed_ResNet152_Pretrained_Freeze_ColorJitter_lr0.005/0215_141830/model_best.pth'
     # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/val/beagle/n02088364_13236.jpg'
-    IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/val/afghan_hound/n02088094_4219.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/val/afghan_hound/n02088094_4219.jpg'
     # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/train/eskimo_dog/n02109961_1276.jpg'
-    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/appenzeller/n02107908_2092.jpg'
-    
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/train/eskimo_dog/n02109961_1076.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/train/siberian_husky/n02110185_8397.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/train/siberian_husky/n02110185_13127.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/eskimo_dog/n02109961_2492.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/eskimo_dog/n02109961_20013.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/eskimo_dog/n02109961_18009.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/eskimo_dog/n02109961_2317.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/siberian_husky/n02110185_5030.jpg'
+    # IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/siberian_husky/n02110185_2614.jpg'
+    IMAGE_PATH = '/home/yongchoooon/workspace/YCHPytorchTemplate/datasets_dogbreed/test/siberian_husky/n02110185_3651.jpg'
     args = argparse.ArgumentParser(description='PyTorch Template')
     args.add_argument('-m', '--model', default=MODEL_PATH, type=str,
                       help='model file path')
