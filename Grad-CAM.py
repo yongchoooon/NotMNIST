@@ -11,10 +11,9 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 
 class ModelOutputs_resnet():
-    def __init__(self, model, target_layers, target_sub_layers):
+    def __init__(self, model, target_layers):
         self.model = model
         self.target_layers = target_layers
-        self.target_sub_layers = target_sub_layers
         self.gradients = []
 
     def save_gradient(self, grad):
@@ -37,11 +36,11 @@ class ModelOutputs_resnet():
 
 
 class GradCam_resnet:
-    def __init__(self, model, target_layer_names, target_sub_layer_names):
+    def __init__(self, model, target_layer_names):
         self.model = model
         self.model.eval()
 
-        self.extractor = ModelOutputs_resnet(self.model, target_layer_names, target_sub_layer_names)
+        self.extractor = ModelOutputs_resnet(self.model, target_layer_names)
 
     def forward(self, input):
         return self.model(input)
@@ -60,9 +59,9 @@ class GradCam_resnet:
 
         grads_val = self.extractor.get_gradients()[-1].cpu().data.numpy() # partial derivative of y^c with respect to A^k, (1, 2048, 7, 7) 
 
-        target = features.cpu().data.numpy()[0, :] # A^k, (2048, 7, 7)
-
         weights = np.mean(grads_val, axis=(2, 3))[0, :]  # alpha_k, 논문에서의 global average pooling 식에 해당하는 부분 (1, 2048)
+        
+        target = features.cpu().data.numpy()[0, :] # A^k, (2048, 7, 7)
 
         grad_cam = np.zeros(target.shape[1:], dtype=np.float32)  # (7, 7)
 
@@ -109,7 +108,7 @@ def main(config):
     class_idx = sorted(os.listdir('./datasets_dogbreed/val/')).index(dogbreed)
 
     # Define the Grad-CAM object
-    gradcam = GradCam_resnet(model, target_layer_names=["layer4"], target_sub_layer_names=["conv3"])
+    gradcam = GradCam_resnet(model, target_layer_names=["layer4"])
 
     # Generate the Grad-CAM for the predicted class
     gradcam_img = gradcam(img_tensor, index=class_idx)
